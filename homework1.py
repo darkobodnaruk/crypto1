@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+'''
+ The CoiciseeOqfor.Dictio.ary ....ag de..nes crypto a...he art..f. writing o g solvdn. code...
+'''
+
 ciphertexts = [
 "315c4eeaa8b5f8aaf9174145bf43e1784b8fa00dc71d885a804e5ee9fa40b16349c146fb778cdf2d3aff021dfff5b403b510d0d0455468aeb98622b137dae857553ccd8883a7bc37520e06e515d22c954eba5025b8cc57ee59418ce7dc6bc41556bdb36bbca3e8774301fbcaa3b83b220809560987815f65286764703de0f3d524400a19b159610b11ef3e",
 "234c02ecbbfbafa3ed18510abd11fa724fcda2018a1a8342cf064bbde548b12b07df44ba7191d9606ef4081ffde5ad46a5069d9f7f543bedb9c861bf29c7e205132eda9382b0bc2c5c4b45f919cf3a9f1cb74151f6d551f4480c82b2cb24cc5b028aa76eb7b4ab24171ab3cdadb8356f",
@@ -13,21 +17,45 @@ ciphertexts = [
 "466d06ece998b7a2fb1d464fed2ced7641ddaa3cc31c9941cf110abbf409ed39598005b3399ccfafb61d0315fca0a314be138a9f32503bedac8067f03adbf3575c3b8edc9ba7f537530541ab0f9f3cd04ff50d66f1d559ba520e89a2cb2a83"
 ]
 
+ciphertexts_decoded = [c.decode('hex') for c in ciphertexts]
+messages = ciphertexts_decoded
+
+partly_decrypted = " The CoiciseeOqfor.Dictio.ary ....ag de..nes crypto a...he art..f. writing o g solvdn. code..."
+print len(partly_decrypted)
+
 def strxor(a, b):     # xor two strings of different lengths
 	if len(a) > len(b):
 		return "".join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a[:len(b)], b)])
 	else:
 		return "".join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a, b[:len(a)])])
 
-print []
+# def strxor2(a, b):     # xor two strings of different lengths
+# 	l1 = min(a,b)
+# 	l2 = max(a,b)
+# 	s = ""
+# 	for i in range(0, len(l1), 2):
+# 		ca = a[i:i+2].decode('hex')
+# 		cb = b[i:i+2].decode('hex')
+# 		print ca,cb
+# 		s += chr(ord(ca) ^ ord(cb))
+
+# 	return s
+
+# print []
 
 cipher_xors = []
 min_len = 999
 
 for i in range(0,10):
 	for j in range(0,10):
+		if i == j:
+			continue
 		s = ""
-		for c in strxor(ciphertexts[i], ciphertexts[j]):
+		# xorz = strxor(ciphertexts[i], ciphertexts[j])
+		# print xorz
+		# values = [xorz[i:i+2].decode('hex') for i in range(0, len(xorz), 2)]
+		# for c in values:
+		for c in strxor(ciphertexts_decoded[i], ciphertexts_decoded[j]):
 			if (ord(c) >= 65 and ord(c) <= 90) or (ord(c) >= 97 and ord(c) <= 122):
 				s += c
 			else:
@@ -36,8 +64,9 @@ for i in range(0,10):
 		# cipher_xors += s
 		cipher_xors.append(s)
 		min_len = min(len(s), min_len)
-		print "%2d:%2s:%s" % (i, j, s[:160])
+		print "%d:%s:%s" % (i, j, s)
 	print
+
 
 print "min_len", min_len
 
@@ -73,3 +102,8 @@ for i in range(0, min_len):
 
 print len(string_of_most_common_letters)
 print string_of_most_common_letters
+
+print strxor(string_of_most_common_letters, ciphertexts_decoded[9])
+
+for i in range(0,10):
+	print strxor(partly_decrypted, ciphertexts_decoded[i]).encode('hex')
