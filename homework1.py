@@ -4,7 +4,14 @@
  The CoiciseeOqfor.Dictio.ary ....ag de..nes crypto a...he art..f. writing o g solvdn. code...
 '''
 
-ciphertexts = [
+def strxor(a, b):     # xor two strings of different lengths
+	if len(a) > len(b):
+		return "".join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a[:len(b)], b)])
+	else:
+		return "".join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a, b[:len(a)])])
+
+
+ciphertexts_hex = [
 "315c4eeaa8b5f8aaf9174145bf43e1784b8fa00dc71d885a804e5ee9fa40b16349c146fb778cdf2d3aff021dfff5b403b510d0d0455468aeb98622b137dae857553ccd8883a7bc37520e06e515d22c954eba5025b8cc57ee59418ce7dc6bc41556bdb36bbca3e8774301fbcaa3b83b220809560987815f65286764703de0f3d524400a19b159610b11ef3e",
 "234c02ecbbfbafa3ed18510abd11fa724fcda2018a1a8342cf064bbde548b12b07df44ba7191d9606ef4081ffde5ad46a5069d9f7f543bedb9c861bf29c7e205132eda9382b0bc2c5c4b45f919cf3a9f1cb74151f6d551f4480c82b2cb24cc5b028aa76eb7b4ab24171ab3cdadb8356f",
 "32510ba9a7b2bba9b8005d43a304b5714cc0bb0c8a34884dd91304b8ad40b62b07df44ba6e9d8a2368e51d04e0e7b207b70b9b8261112bacb6c866a232dfe257527dc29398f5f3251a0d47e503c66e935de81230b59b7afb5f41afa8d661cb",
@@ -17,109 +24,72 @@ ciphertexts = [
 "466d06ece998b7a2fb1d464fed2ced7641ddaa3cc31c9941cf110abbf409ed39598005b3399ccfafb61d0315fca0a314be138a9f32503bedac8067f03adbf3575c3b8edc9ba7f537530541ab0f9f3cd04ff50d66f1d559ba520e89a2cb2a83"
 ]
 
-ciphertexts_decoded = [c.decode('hex') for c in ciphertexts]
-messages = ciphertexts_decoded
+cipher_to_solve = "32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904"
 
-partly_decrypted = " The CoiciseeOqfor.Dictio.ary ....ag de..nes crypto a...he art..f. writing o g solvdn. code..."
-print len(partly_decrypted)
+ciphertexts = [c.decode('hex') for c in ciphertexts_hex]
 
-def strxor(a, b):     # xor two strings of different lengths
-	if len(a) > len(b):
-		return "".join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a[:len(b)], b)])
-	else:
-		return "".join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a, b[:len(a)])])
-
+messages = ["" for i in range(0,10)]
+xors = [["" for j in range(0,10)] for i in range(0,10)]
 
 cipher_xors = []
-# min_len = 999
 
+# first I ran this which produced the partial_messages (and I swapped the case in a text editor)
+##############################################
 
-min_len = min([len(s) for s in ciphertexts_decoded])
+min_len = min([len(s) for s in ciphertexts])
+print "min_len", min_len
 for k in range(0, min_len):
+	# loop through all chars (shortest ciphertext)
 	num_alphabetical_chars = [0,0,0,0,0,0,0,0,0,0]
 	for i in range(0,10):
 		for j in range(0,10):
 			if i == j:
 				continue
-			c = ord(ciphertexts_decoded[i][k]) ^ ord(ciphertexts_decoded[j][k])
-			# if (ord(c) >= 65 and ord(c) <= 90) or (ord(c) >= 97 and ord(c) <= 122):
+			c = ord(ciphertexts[i][k]) ^ ord(ciphertexts[j][k])
 			if (c >= 65 and c <= 90) or (c >= 97 and c <= 122):
 				num_alphabetical_chars[i] += 1
-		if num_alphabetical_chars == 10:
-			for x in range(0,10):
-				if x == j:
-					continue
-				messages[x][k] = ciphertexts_decoded[i][k] ^ ciphertexts_decoded[x][k]
+				xors[i][j] += chr(c)
+			else:
+				xors[i][j] += "."
+		# print num_alphabetical_chars[i]
 
-	# index_of_max_num_alphabetical_chars = 0
-	# for i in range(0,10):
-	# 	for j in range(0,10):
-	# 		if num_alphabetical_chars[i] > index_of_max_num_alphabetical_chars:
-	# 			index_of_max_num_alphabetical_chars = i
-	# 	messages[i][k] = ciphertexts_decoded[index_of_max_num_alphabetical_chars][k]
+	space_found = False
+	for i in range(0,10):
+		if num_alphabetical_chars[i] >= 7:
+			space_found = True
+			for j in range(0,10):
+				if i == j:
+					messages[j] += " "
+					# print "add", j, "sp"
+				else:
+					messages[j] += xors[i][j][k]
+					# print "add", j, xors[i][j][k]
+			break
+	if not space_found:
+		for j in range(0,10):
+			messages[j] += " "
 
-
-# for i in range(0,10):
-# 	for j in range(0,10):
-# 		if i == j:
-# 			continue
-# 		s = ""
-# 		# xorz = strxor(ciphertexts[i], ciphertexts[j])
-# 		# print xorz
-# 		# values = [xorz[i:i+2].decode('hex') for i in range(0, len(xorz), 2)]
-# 		# for c in values:
-# 		for c in strxor(ciphertexts_decoded[i], ciphertexts_decoded[j]):
-# 			if (ord(c) >= 65 and ord(c) <= 90) or (ord(c) >= 97 and ord(c) <= 122):
-# 				s += c
-# 			else:
-# 				s += " "
-# 			# s += c
-# 		# cipher_xors += s
-# 		cipher_xors.append(s)
-# 		min_len = min(len(s), min_len)
-# 		print "%d:%s:%s" % (i, j, s)
-# 	print
-
-
-# print "min_len", min_len
-
-# string_of_most_common_letters = ""
-
-# for i in range(0, min_len):
-# 	letter_counts = {}
-# 	for s in cipher_xors:
-# 		ch = s[i]
-# 		if ch == " ":
-# 			continue
-# 		if ch in letter_counts:
-# 			letter_counts[ch] += 1
-# 		else:
-# 			letter_counts[ch] = 1
-
-# 		# if i == 1:
-# 		# 	print "%s %s" % (ch, letter_counts[ch])
-
-# 	# print "letter_counts", letter_counts
-
-# 	most_common_letter = ""
-# 	most_common_letter_count = 0
-# 	for l, c in letter_counts.iteritems():
-# 		# print "l, c", l, c
-# 		if c > most_common_letter_count:
-# 			most_common_letter = l
-# 			most_common_letter_count = c
-# 	# print "---"
-# 	string_of_most_common_letters += most_common_letter
-# 	# if most_common_letter == "":
-# 		# print i
-
-# print len(string_of_most_common_letters)
-# print string_of_most_common_letters
-
-# print strxor(string_of_most_common_letters, ciphertexts_decoded[9])
-
-# for i in range(0,10):
-# 	print strxor(partly_decrypted, ciphertexts_decoded[i]).encode('hex')
+for i in range(0,10):
+	for j in range(0,10):
+		print xors[i][j]
 
 for i in range(0,10):
 	print messages[i]
+
+# then I produced the key in a few iterations in the console
+##############################################
+
+partial_messages = [
+"We can aactor  he  umber    with q  ctu  computers  We   n also fa to  the number  . w th a  o",
+"Euler would probably enjoy that no___is theorem become    corne  s on .of crypto . Ann nymou  ",
+"The nicb thing abo t.Keey  q is.no  ze  ryptographkrs    .drive a  ot of fancy car  .  an.Bo e",
+"The.cipoertext pro uced b  a.weak   nry tion algorgthm   oks as go d  s ciphertext pro uced. y",
+"You.don t want to. uy a.s  .of car  hys from.a guy.who   eciali es in stealing.car ... arc R t",
+"There.aue.two. ype  of cr  tograph    t at which wgll.   p.secr ts sa e.from your. itt e sis e",
+"There.aue.two. ype .of.cy  ography  bne that.allow..th   overnm nt to use.brute fo ce. o.bre k",
+"We.can.tee the poi t.wher  the.chi  ds. nhappy.if o.wr   .bit i .s nt and.consumes mor  powe .",
+"A .privfte.key   e crypti  .scheme  yat s . algorizhms   amely  .p oc dure.for.gen rat ng.ke s",
+" The Coicise O for Dictio  ry ....  .de ..nes crypzo a   he art of  w iting o r.so vin .code .",
+ ]
+
+key = strxor(partial_messages[1][0:34], ciphertexts[1][0:34])
