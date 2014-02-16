@@ -29,81 +29,97 @@ def strxor(a, b):     # xor two strings of different lengths
 	else:
 		return "".join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a, b[:len(a)])])
 
-# def strxor2(a, b):     # xor two strings of different lengths
-# 	l1 = min(a,b)
-# 	l2 = max(a,b)
-# 	s = ""
-# 	for i in range(0, len(l1), 2):
-# 		ca = a[i:i+2].decode('hex')
-# 		cb = b[i:i+2].decode('hex')
-# 		print ca,cb
-# 		s += chr(ord(ca) ^ ord(cb))
-
-# 	return s
-
-# print []
 
 cipher_xors = []
-min_len = 999
+# min_len = 999
+
+
+min_len = min([len(s) for s in ciphertexts_decoded])
+for k in range(0, min_len):
+	num_alphabetical_chars = [0,0,0,0,0,0,0,0,0,0]
+	for i in range(0,10):
+		for j in range(0,10):
+			if i == j:
+				continue
+			c = ord(ciphertexts_decoded[i][k]) ^ ord(ciphertexts_decoded[j][k])
+			# if (ord(c) >= 65 and ord(c) <= 90) or (ord(c) >= 97 and ord(c) <= 122):
+			if (c >= 65 and c <= 90) or (c >= 97 and c <= 122):
+				num_alphabetical_chars[i] += 1
+		if num_alphabetical_chars == 10:
+			for x in range(0,10):
+				if x == j:
+					continue
+				messages[x][k] = ciphertexts_decoded[i][k] ^ ciphertexts_decoded[x][k]
+
+	# index_of_max_num_alphabetical_chars = 0
+	# for i in range(0,10):
+	# 	for j in range(0,10):
+	# 		if num_alphabetical_chars[i] > index_of_max_num_alphabetical_chars:
+	# 			index_of_max_num_alphabetical_chars = i
+	# 	messages[i][k] = ciphertexts_decoded[index_of_max_num_alphabetical_chars][k]
+
+
+# for i in range(0,10):
+# 	for j in range(0,10):
+# 		if i == j:
+# 			continue
+# 		s = ""
+# 		# xorz = strxor(ciphertexts[i], ciphertexts[j])
+# 		# print xorz
+# 		# values = [xorz[i:i+2].decode('hex') for i in range(0, len(xorz), 2)]
+# 		# for c in values:
+# 		for c in strxor(ciphertexts_decoded[i], ciphertexts_decoded[j]):
+# 			if (ord(c) >= 65 and ord(c) <= 90) or (ord(c) >= 97 and ord(c) <= 122):
+# 				s += c
+# 			else:
+# 				s += " "
+# 			# s += c
+# 		# cipher_xors += s
+# 		cipher_xors.append(s)
+# 		min_len = min(len(s), min_len)
+# 		print "%d:%s:%s" % (i, j, s)
+# 	print
+
+
+# print "min_len", min_len
+
+# string_of_most_common_letters = ""
+
+# for i in range(0, min_len):
+# 	letter_counts = {}
+# 	for s in cipher_xors:
+# 		ch = s[i]
+# 		if ch == " ":
+# 			continue
+# 		if ch in letter_counts:
+# 			letter_counts[ch] += 1
+# 		else:
+# 			letter_counts[ch] = 1
+
+# 		# if i == 1:
+# 		# 	print "%s %s" % (ch, letter_counts[ch])
+
+# 	# print "letter_counts", letter_counts
+
+# 	most_common_letter = ""
+# 	most_common_letter_count = 0
+# 	for l, c in letter_counts.iteritems():
+# 		# print "l, c", l, c
+# 		if c > most_common_letter_count:
+# 			most_common_letter = l
+# 			most_common_letter_count = c
+# 	# print "---"
+# 	string_of_most_common_letters += most_common_letter
+# 	# if most_common_letter == "":
+# 		# print i
+
+# print len(string_of_most_common_letters)
+# print string_of_most_common_letters
+
+# print strxor(string_of_most_common_letters, ciphertexts_decoded[9])
+
+# for i in range(0,10):
+# 	print strxor(partly_decrypted, ciphertexts_decoded[i]).encode('hex')
 
 for i in range(0,10):
-	for j in range(0,10):
-		if i == j:
-			continue
-		s = ""
-		# xorz = strxor(ciphertexts[i], ciphertexts[j])
-		# print xorz
-		# values = [xorz[i:i+2].decode('hex') for i in range(0, len(xorz), 2)]
-		# for c in values:
-		for c in strxor(ciphertexts_decoded[i], ciphertexts_decoded[j]):
-			if (ord(c) >= 65 and ord(c) <= 90) or (ord(c) >= 97 and ord(c) <= 122):
-				s += c
-			else:
-				s += " "
-			# s += c
-		# cipher_xors += s
-		cipher_xors.append(s)
-		min_len = min(len(s), min_len)
-		print "%d:%s:%s" % (i, j, s)
-	print
-
-
-print "min_len", min_len
-
-string_of_most_common_letters = ""
-
-for i in range(0, min_len):
-	letter_counts = {}
-	for s in cipher_xors:
-		ch = s[i]
-		if ch == " ":
-			continue
-		if ch in letter_counts:
-			letter_counts[ch] += 1
-		else:
-			letter_counts[ch] = 1
-
-		# if i == 1:
-		# 	print "%s %s" % (ch, letter_counts[ch])
-
-	# print "letter_counts", letter_counts
-
-	most_common_letter = ""
-	most_common_letter_count = 0
-	for l, c in letter_counts.iteritems():
-		# print "l, c", l, c
-		if c > most_common_letter_count:
-			most_common_letter = l
-			most_common_letter_count = c
-	# print "---"
-	string_of_most_common_letters += most_common_letter
-	# if most_common_letter == "":
-		# print i
-
-print len(string_of_most_common_letters)
-print string_of_most_common_letters
-
-print strxor(string_of_most_common_letters, ciphertexts_decoded[9])
-
-for i in range(0,10):
-	print strxor(partly_decrypted, ciphertexts_decoded[i]).encode('hex')
+	print messages[i]
