@@ -76,7 +76,9 @@ for i in range(0,10):
 for i in range(0,10):
 	print messages[i]
 
-# then I produced the key in a few iterations in the console
+# then I produced first 34 bytes of the key
+# and then in the console in 2 more iterations I produced the entire key 
+# (by picking the most obvious looking message and guessing its contents)
 ##############################################
 
 partial_messages = [
@@ -93,3 +95,10 @@ partial_messages = [
  ]
 
 key = strxor(partial_messages[1][0:34], ciphertexts[1][0:34])
+
+'''
+The solution:
+
+The secret message is: When using a stream cipher, never use the key more than once
+'''
+
